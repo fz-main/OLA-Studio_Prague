@@ -1,0 +1,1536 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OLA STUDIO — Premium Hair, Nail & Aesthetics | Prague</title>
+<meta name="description" content="OLA Studio — Premium Hair, Nail & Aesthetics Salon in Prague, Plzeňská 535/50. Bespoke beauty experiences crafted for the discerning.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Montserrat:wght@200;300;400;500;600&family=Space+Mono:ital@0;1&display=swap" rel="stylesheet">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --cream: #fdf8f3;
+    --blush: #f5e6dc;
+    --rose: #c9877a;
+    --gold: #b8960c;
+    --gold-light: #e8c547;
+    --charcoal: #1a1614;
+    --warm-dark: #1e1a17;
+    --mid: #6b5d55;
+    --text-light: #e8ddd6;
+    --white: #ffffff;
+    --glass-bg: rgba(253,248,243,0.06);
+    --glass-border: rgba(255,255,255,0.12);
+    --font-serif: 'Cormorant Garamond', Georgia, serif;
+    --font-sans: 'Montserrat', sans-serif;
+    --font-mono: 'Space Mono', monospace;
+  }
+
+  html {
+    scroll-behavior: auto;
+    overflow-x: hidden;
+  }
+
+  body {
+    background: var(--charcoal);
+    color: var(--text-light);
+    font-family: var(--font-sans);
+    font-weight: 300;
+    overflow-x: hidden;
+    min-height: 100vh;
+  }
+
+  #canvas-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  #canvas-container canvas {
+    display: block;
+    width: 100% !important;
+    height: 100% !important;
+  }
+
+  /* NAVBAR */
+  nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    padding: 1.5rem 3rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: rgba(26, 22, 20, 0.4);
+    backdrop-filter: blur(20px) saturate(1.2);
+    -webkit-backdrop-filter: blur(20px) saturate(1.2);
+    border-bottom: 0.5px solid var(--glass-border);
+    transition: background 0.4s ease;
+  }
+
+  nav.scrolled {
+    background: rgba(26, 22, 20, 0.85);
+  }
+
+  .nav-logo {
+    font-family: var(--font-serif);
+    font-size: 1.6rem;
+    font-weight: 300;
+    letter-spacing: 0.25em;
+    color: var(--cream);
+    text-decoration: none;
+  }
+
+  .nav-logo span {
+    color: var(--rose);
+  }
+
+  .nav-right {
+    display: flex;
+    align-items: center;
+    gap: 2.5rem;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 2rem;
+    list-style: none;
+  }
+
+  .nav-links a {
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--text-light);
+    text-decoration: none;
+    opacity: 0.7;
+    transition: opacity 0.3s, color 0.3s;
+  }
+
+  .nav-links a:hover {
+    opacity: 1;
+    color: var(--rose);
+  }
+
+  .lang-switcher {
+    display: flex;
+    gap: 0.5rem;
+    border: 0.5px solid var(--glass-border);
+    border-radius: 2rem;
+    padding: 0.25rem 0.5rem;
+  }
+
+  .lang-btn {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    color: var(--text-light);
+    opacity: 0.5;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.2rem 0.4rem;
+    border-radius: 1rem;
+    transition: all 0.25s;
+  }
+
+  .lang-btn.active, .lang-btn:hover {
+    opacity: 1;
+    background: rgba(201,135,122,0.25);
+    color: var(--rose);
+  }
+
+  /* SECTIONS */
+  section {
+    position: relative;
+    z-index: 10;
+  }
+
+  /* HERO */
+  #hero {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 2rem;
+    pointer-events: none;
+  }
+
+  .hero-eyebrow {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: var(--rose);
+    opacity: 0;
+    margin-bottom: 1.5rem;
+  }
+
+  .hero-title {
+    font-family: var(--font-serif);
+    font-size: clamp(3.5rem, 8vw, 8rem);
+    font-weight: 300;
+    letter-spacing: 0.12em;
+    line-height: 1.0;
+    color: var(--cream);
+    opacity: 0;
+    margin-bottom: 0.5rem;
+  }
+
+  .hero-title em {
+    font-style: italic;
+    color: var(--rose);
+  }
+
+  .hero-subtitle {
+    font-family: var(--font-sans);
+    font-size: 0.75rem;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: var(--text-light);
+    opacity: 0;
+    margin-top: 1.5rem;
+    font-weight: 300;
+  }
+
+  .hero-scroll-hint {
+    position: absolute;
+    bottom: 3rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .hero-scroll-hint span {
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--mid);
+  }
+
+  .scroll-line {
+    width: 0.5px;
+    height: 50px;
+    background: linear-gradient(to bottom, var(--rose), transparent);
+    animation: scrollPulse 2s ease-in-out infinite;
+  }
+
+  @keyframes scrollPulse {
+    0%, 100% { opacity: 0.3; transform: scaleY(1); }
+    50% { opacity: 1; transform: scaleY(1.1); }
+  }
+
+  /* PARTICLES */
+  #particles-overlay {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw; height: 100vh;
+    z-index: 1;
+    pointer-events: none;
+    overflow: hidden;
+  }
+
+  .data-pulse {
+    position: absolute;
+    font-family: var(--font-mono);
+    font-size: 0.55rem;
+    letter-spacing: 0.2em;
+    color: var(--gold-light);
+    opacity: 0;
+    pointer-events: none;
+    white-space: nowrap;
+  }
+
+  /* SERVICES SECTION */
+  #services {
+    min-height: 200vh;
+    padding: 10rem 3rem;
+  }
+
+  .section-label {
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: var(--rose);
+    margin-bottom: 1rem;
+    opacity: 0.8;
+  }
+
+  .section-title {
+    font-family: var(--font-serif);
+    font-size: clamp(2.5rem, 5vw, 5rem);
+    font-weight: 300;
+    line-height: 1.1;
+    color: var(--cream);
+    margin-bottom: 4rem;
+  }
+
+  .section-title em {
+    font-style: italic;
+    color: var(--rose);
+  }
+
+  #bento-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: auto;
+    gap: 1.5rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .bento-card {
+    background: var(--glass-bg);
+    border: 0.5px solid var(--glass-border);
+    border-radius: 1.5rem;
+    padding: 2.5rem;
+    backdrop-filter: blur(16px) saturate(1.4);
+    -webkit-backdrop-filter: blur(16px) saturate(1.4);
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    transition: border-color 0.4s;
+    transform-style: preserve-3d;
+    perspective: 1000px;
+  }
+
+  .bento-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: radial-gradient(ellipse at 30% 30%, rgba(201,135,122,0.08) 0%, transparent 70%);
+    opacity: 0;
+    transition: opacity 0.4s;
+  }
+
+  .bento-card:hover::before { opacity: 1; }
+  .bento-card:hover { border-color: rgba(201,135,122,0.4); }
+
+  .bento-card.large {
+    grid-column: span 2;
+    grid-row: span 2;
+  }
+
+  .bento-card.tall {
+    grid-row: span 2;
+  }
+
+  .bento-number {
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    letter-spacing: 0.3em;
+    color: var(--rose);
+    margin-bottom: 2rem;
+    opacity: 0.7;
+  }
+
+  .bento-icon {
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+    display: block;
+  }
+
+  .bento-title {
+    font-family: var(--font-serif);
+    font-size: 1.8rem;
+    font-weight: 300;
+    color: var(--cream);
+    line-height: 1.1;
+    margin-bottom: 1.5rem;
+  }
+
+  .bento-desc {
+    font-size: 0.8rem;
+    line-height: 1.8;
+    color: var(--text-light);
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 0.5s, transform 0.5s;
+    filter: blur(4px);
+  }
+
+  .bento-card:hover .bento-desc {
+    opacity: 0.75;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+
+  .bento-tag {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: 0.55rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--gold);
+    border: 0.5px solid rgba(184,150,12,0.4);
+    border-radius: 2rem;
+    padding: 0.3rem 0.8rem;
+    margin-top: 1.5rem;
+  }
+
+  .bento-price {
+    font-family: var(--font-serif);
+    font-size: 1.2rem;
+    color: var(--rose);
+    margin-top: 1rem;
+    font-style: italic;
+  }
+
+  /* DIAGONAL PARTICLES CSS */
+  #diag-canvas {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw; height: 100vh;
+    z-index: 2;
+    pointer-events: none;
+    opacity: 0;
+  }
+
+  /* SPECIALISTS */
+  #specialists {
+    padding: 10rem 3rem;
+    background: rgba(26,22,20,0.85);
+  }
+
+  .specialists-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+    max-width: 1100px;
+    margin: 4rem auto 0;
+  }
+
+  .specialist-card {
+    background: var(--glass-bg);
+    border: 0.5px solid var(--glass-border);
+    border-radius: 1.5rem;
+    padding: 2rem;
+    text-align: center;
+    transition: transform 0.4s, border-color 0.4s;
+  }
+
+  .specialist-card:hover {
+    transform: translateY(-6px);
+    border-color: rgba(201,135,122,0.4);
+  }
+
+  .specialist-avatar {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    margin: 0 auto 1.5rem;
+    background: linear-gradient(135deg, rgba(201,135,122,0.3), rgba(184,150,12,0.2));
+    border: 0.5px solid rgba(201,135,122,0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-serif);
+    font-size: 2.5rem;
+    font-weight: 300;
+    color: var(--rose);
+    font-style: italic;
+  }
+
+  .specialist-name {
+    font-family: var(--font-serif);
+    font-size: 1.6rem;
+    font-weight: 300;
+    color: var(--cream);
+    margin-bottom: 0.4rem;
+    font-style: italic;
+  }
+
+  .specialist-role {
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--rose);
+    margin-bottom: 1rem;
+    opacity: 0.8;
+  }
+
+  .specialist-bio {
+    font-size: 0.78rem;
+    line-height: 1.8;
+    color: var(--text-light);
+    opacity: 0.7;
+    margin-bottom: 1.5rem;
+  }
+
+  .specialist-skills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    justify-content: center;
+  }
+
+  .skill-pill {
+    font-family: var(--font-mono);
+    font-size: 0.55rem;
+    letter-spacing: 0.1em;
+    color: var(--gold);
+    border: 0.5px solid rgba(184,150,12,0.35);
+    border-radius: 2rem;
+    padding: 0.25rem 0.65rem;
+  }
+
+  /* LOCATION */
+  #location {
+    padding: 8rem 3rem;
+    position: relative;
+  }
+
+  .location-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: start;
+  }
+
+  .location-info h3 {
+    font-family: var(--font-serif);
+    font-size: clamp(2rem, 4vw, 3.5rem);
+    font-weight: 300;
+    color: var(--cream);
+    margin-bottom: 2rem;
+    line-height: 1.1;
+  }
+
+  .location-info h3 em { font-style: italic; color: var(--rose); }
+
+  .location-detail {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    align-items: flex-start;
+  }
+
+  .location-detail-icon {
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    color: var(--rose);
+    letter-spacing: 0.1em;
+    padding-top: 0.15rem;
+    min-width: 60px;
+  }
+
+  .location-detail-text {
+    font-size: 0.82rem;
+    line-height: 1.7;
+    color: var(--text-light);
+    opacity: 0.8;
+  }
+
+  .map-wrapper {
+    border-radius: 1.5rem;
+    overflow: hidden;
+    border: 0.5px solid var(--glass-border);
+    height: 420px;
+    position: relative;
+  }
+
+  .map-wrapper iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+    filter: invert(1) hue-rotate(180deg) saturate(0.8) brightness(0.85);
+  }
+
+  /* FOOTER */
+  footer {
+    background: var(--warm-dark);
+    border-top: 0.5px solid var(--glass-border);
+    padding: 5rem 3rem 3rem;
+  }
+
+  .footer-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .footer-top {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr 1fr 1fr;
+    gap: 3rem;
+    margin-bottom: 4rem;
+    padding-bottom: 4rem;
+    border-bottom: 0.5px solid var(--glass-border);
+  }
+
+  .footer-brand p {
+    font-size: 0.78rem;
+    line-height: 1.8;
+    color: var(--text-light);
+    opacity: 0.6;
+    margin-top: 1rem;
+    max-width: 260px;
+  }
+
+  .footer-col h4 {
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    color: var(--rose);
+    margin-bottom: 1.5rem;
+    opacity: 0.8;
+  }
+
+  .footer-col ul {
+    list-style: none;
+  }
+
+  .footer-col li {
+    margin-bottom: 0.75rem;
+  }
+
+  .footer-col a {
+    font-size: 0.8rem;
+    color: var(--text-light);
+    opacity: 0.6;
+    text-decoration: none;
+    transition: opacity 0.25s, color 0.25s;
+  }
+
+  .footer-col a:hover { opacity: 1; color: var(--rose); }
+
+  .footer-col p {
+    font-size: 0.8rem;
+    color: var(--text-light);
+    opacity: 0.6;
+    line-height: 1.8;
+    margin-bottom: 0.4rem;
+  }
+
+  .footer-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .footer-copy {
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    letter-spacing: 0.15em;
+    color: var(--text-light);
+    opacity: 0.4;
+  }
+
+  .footer-social {
+    display: flex;
+    gap: 1.5rem;
+  }
+
+  .footer-social a {
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--text-light);
+    opacity: 0.4;
+    text-decoration: none;
+    transition: opacity 0.25s, color 0.25s;
+  }
+
+  .footer-social a:hover { opacity: 0.9; color: var(--rose); }
+
+  .booking-btn {
+    display: inline-block;
+    margin-top: 2.5rem;
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--charcoal);
+    background: var(--rose);
+    border: none;
+    padding: 1rem 2rem;
+    border-radius: 2rem;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background 0.3s, transform 0.3s;
+  }
+
+  .booking-btn:hover {
+    background: var(--cream);
+    transform: translateY(-2px);
+  }
+
+  /* Divider helper */
+  .divider-line {
+    width: 40px;
+    height: 0.5px;
+    background: var(--rose);
+    opacity: 0.5;
+    margin: 2rem 0;
+  }
+
+  /* RESPONSIVE */
+  @media (max-width: 900px) {
+    nav { padding: 1rem 1.5rem; }
+    .nav-links { display: none; }
+    #bento-container { grid-template-columns: 1fr; }
+    .bento-card.large, .bento-card.tall { grid-column: span 1; grid-row: span 1; }
+    .specialists-grid { grid-template-columns: 1fr; }
+    .location-inner { grid-template-columns: 1fr; }
+    .footer-top { grid-template-columns: 1fr 1fr; }
+    #services { padding: 6rem 1.5rem; }
+    #specialists { padding: 6rem 1.5rem; }
+    #location { padding: 5rem 1.5rem; }
+  }
+
+  @media (max-width: 600px) {
+    .footer-top { grid-template-columns: 1fr; }
+    .footer-bottom { flex-direction: column; gap: 1rem; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<!-- WEBGL CANVAS -->
+<div id="canvas-container"></div>
+
+<!-- DIAGONAL PARTICLE CANVAS -->
+<canvas id="diag-canvas"></canvas>
+
+<!-- DATA PULSES OVERLAY -->
+<div id="particles-overlay"></div>
+
+<!-- NAV -->
+<nav id="main-nav">
+  <a class="nav-logo" href="#">OLA <span>STUDIO</span></a>
+  <div class="nav-right">
+    <ul class="nav-links">
+      <li><a href="#services" data-i18n="nav_services">Services</a></li>
+      <li><a href="#specialists" data-i18n="nav_team">Team</a></li>
+      <li><a href="#location" data-i18n="nav_location">Location</a></li>
+    </ul>
+    <div class="lang-switcher">
+      <button class="lang-btn active" data-lang="en">EN</button>
+      <button class="lang-btn" data-lang="cs">CZ</button>
+      <button class="lang-btn" data-lang="ru">RU</button>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <p class="hero-eyebrow" data-i18n="hero_eyebrow">Prague · Plzeňská 535/50 · Premium Salon</p>
+  <h1 class="hero-title">OLA<br><em>Studio</em></h1>
+  <p class="hero-subtitle" data-i18n="hero_subtitle">Where Artistry Meets Luxury Beauty</p>
+  <div class="hero-scroll-hint">
+    <span data-i18n="scroll_hint">Scroll to explore</span>
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<!-- SERVICES -->
+<section id="services">
+  <div style="max-width:1200px; margin:0 auto 4rem;">
+    <p class="section-label" data-i18n="services_label">— Our Signature Services</p>
+    <h2 class="section-title" data-i18n="services_title">Crafted<br>with <em>Precision</em></h2>
+  </div>
+
+  <div id="bento-container">
+
+    <!-- CARD 1: Large Hair -->
+    <div class="bento-card large" id="card-hair">
+      <p class="bento-number">01 __ HAIR</p>
+      <span class="bento-icon">✦</span>
+      <h3 class="bento-title" data-i18n="card1_title">Premium Hair<br>Styling & Color</h3>
+      <p class="bento-desc" data-i18n="card1_desc">Our master colorists wield the finest European pigments and balayage techniques to sculpt your ideal shade—whether that's a seamless sun-kissed melt, bold vibrant fantasy hues, or precision-crafted highlights that catch every light. From Olaplex-treated colour journeys to razor-sharp cuts by our senior stylists, every appointment is a bespoke atelier experience.</p>
+      <span class="bento-tag" data-i18n="card1_tag">From 1,800 CZK</span>
+      <p class="bento-price">Balayage · Highlights · Keratin · Cuts</p>
+    </div>
+
+    <!-- CARD 2: Nails -->
+    <div class="bento-card" id="card-nails">
+      <p class="bento-number">02 __ NAILS</p>
+      <span class="bento-icon">◈</span>
+      <h3 class="bento-title" data-i18n="card2_title">Bespoke Nail Architecture</h3>
+      <p class="bento-desc" data-i18n="card2_desc">Gel extensions, nail art, and manicure rituals designed to perfection. Each set a miniature sculpture.</p>
+      <span class="bento-tag" data-i18n="card2_tag">From 650 CZK</span>
+    </div>
+
+    <!-- CARD 3: Aesthetics -->
+    <div class="bento-card tall" id="card-aes">
+      <p class="bento-number">03 __ SKIN</p>
+      <span class="bento-icon">◎</span>
+      <h3 class="bento-title" data-i18n="card3_title">Advanced Aesthetics</h3>
+      <p class="bento-desc" data-i18n="card3_desc">Clinical-grade facial treatments, mesotherapy, and skin rejuvenation using the latest dermal technologies. Your radiance, redefined.</p>
+      <span class="bento-tag" data-i18n="card3_tag">From 2,200 CZK</span>
+      <p class="bento-price">Hydrafacial · Peels · Mesotherapy</p>
+    </div>
+
+    <!-- CARD 4: Lashes -->
+    <div class="bento-card" id="card-lash">
+      <p class="bento-number">04 __ LASHES</p>
+      <span class="bento-icon">◐</span>
+      <h3 class="bento-title" data-i18n="card4_title">Lash & Brow Sculpting</h3>
+      <p class="bento-desc" data-i18n="card4_desc">Volume lash sets, lamination, and precision brow shaping to frame your gaze.</p>
+      <span class="bento-tag" data-i18n="card4_tag">From 800 CZK</span>
+    </div>
+
+    <!-- CARD 5: Ritual -->
+    <div class="bento-card" id="card-ritual">
+      <p class="bento-number">05 __ RITUAL</p>
+      <span class="bento-icon">⬡</span>
+      <h3 class="bento-title" data-i18n="card5_title">OLA Luxury Ritual</h3>
+      <p class="bento-desc" data-i18n="card5_desc">A curated full-day package: hair, nails, facial and champagne welcome. The ultimate Prague beauty day.</p>
+      <span class="bento-tag" data-i18n="card5_tag">From 5,500 CZK</span>
+    </div>
+
+  </div>
+</section>
+
+<!-- SPECIALISTS -->
+<section id="specialists">
+  <div style="max-width:1100px; margin:0 auto;">
+    <p class="section-label" data-i18n="team_label">— The Artisans Behind OLA</p>
+    <h2 class="section-title" data-i18n="team_title">Meet Our<br><em>Specialists</em></h2>
+    <div class="divider-line"></div>
+  </div>
+
+  <div class="specialists-grid">
+
+    <div class="specialist-card">
+      <div class="specialist-avatar">K</div>
+      <h3 class="specialist-name">Kristýna Nováková</h3>
+      <p class="specialist-role" data-i18n="spec1_role">Senior Hair Colorist</p>
+      <p class="specialist-bio" data-i18n="spec1_bio">Trained at the L'Oréal Professional Academy in Paris, Kristýna specialises in balayage, colour correction and hair health. With over 9 years of experience and a portfolio of editorial credits, she brings couture-level artistry to every client chair.</p>
+      <div class="specialist-skills">
+        <span class="skill-pill">Balayage</span>
+        <span class="skill-pill">Olaplex</span>
+        <span class="skill-pill">Colour Correction</span>
+        <span class="skill-pill">Keratin</span>
+      </div>
+    </div>
+
+    <div class="specialist-card">
+      <div class="specialist-avatar">A</div>
+      <h3 class="specialist-name">Anastasia Volková</h3>
+      <p class="specialist-role" data-i18n="spec2_role">Nail Architect & Artist</p>
+      <p class="specialist-bio" data-i18n="spec2_bio">Anastasia's nail artistry has appeared in Czech Vogue and Elle Beauty. She commands every technique from sculptural acrylics to delicate gel nail art, working only with premium HEMA-free gel systems for the safest, most luminous results.</p>
+      <div class="specialist-skills">
+        <span class="skill-pill">Gel Extensions</span>
+        <span class="skill-pill">Nail Art</span>
+        <span class="skill-pill">Ombre</span>
+        <span class="skill-pill">HEMA-Free</span>
+      </div>
+    </div>
+
+    <div class="specialist-card">
+      <div class="specialist-avatar">M</div>
+      <h3 class="specialist-name">Monika Horáčková</h3>
+      <p class="specialist-role" data-i18n="spec3_role">Aesthetic Medicine Therapist</p>
+      <p class="specialist-bio" data-i18n="spec3_bio">A certified aesthetic therapist with a background in dermatology nursing, Monika combines clinical precision with a deeply personalised touch. She specialises in Hydrafacial, advanced peels, and vitamin C mesotherapy protocols.</p>
+      <div class="specialist-skills">
+        <span class="skill-pill">Hydrafacial</span>
+        <span class="skill-pill">Mesotherapy</span>
+        <span class="skill-pill">Peels</span>
+        <span class="skill-pill">LED Therapy</span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- LOCATION -->
+<section id="location">
+  <div class="location-inner">
+    <div class="location-info">
+      <p class="section-label" data-i18n="loc_label">— Find Us</p>
+      <h3><em>OLA Studio</em><br>Prague</h3>
+      <div class="divider-line"></div>
+
+      <div class="location-detail">
+        <span class="location-detail-icon">ADDR</span>
+        <p class="location-detail-text">Plzeňská 535/50<br>150 00 Praha 5 – Smíchov<br>Czech Republic</p>
+      </div>
+
+      <div class="location-detail">
+        <span class="location-detail-icon">HOURS</span>
+        <p class="location-detail-text" data-i18n="hours_detail">Mon – Fri: 9:00 – 20:00<br>Saturday: 9:00 – 18:00<br>Sunday: Closed</p>
+      </div>
+
+      <div class="location-detail">
+        <span class="location-detail-icon">TEL</span>
+        <p class="location-detail-text">+420 777 123 456</p>
+      </div>
+
+      <div class="location-detail">
+        <span class="location-detail-icon">EMAIL</span>
+        <p class="location-detail-text">hello@olastudio.cz</p>
+      </div>
+
+      <a class="booking-btn" href="mailto:hello@olastudio.cz" data-i18n="book_btn">Book an Appointment</a>
+    </div>
+
+    <div class="map-wrapper">
+      <iframe
+        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2561.3!2d14.396!3d50.073!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x470b94a673f4f0ad%3A0x7b5ec3f67edaf20f!2sPLZE%C5%87SK%C3%81%20535%2F50%2C%20150%2000%20Praha%205!5e0!3m2!1sen!2scz!4v1700000000000!5m2!1sen!2scz"
+        allowfullscreen=""
+        loading="lazy"
+        referrerpolicy="no-referrer-when-downgrade"
+        title="OLA Studio Location">
+      </iframe>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <a class="nav-logo" href="#">OLA <span>STUDIO</span></a>
+        <p data-i18n="footer_tagline">Where Prague's most discerning clients discover beauty elevated to art. Every appointment, a private atelier experience.</p>
+      </div>
+
+      <div class="footer-col">
+        <h4 data-i18n="footer_services_h">Services</h4>
+        <ul>
+          <li><a href="#services" data-i18n="fs1">Hair Styling & Color</a></li>
+          <li><a href="#services" data-i18n="fs2">Nail Architecture</a></li>
+          <li><a href="#services" data-i18n="fs3">Advanced Aesthetics</a></li>
+          <li><a href="#services" data-i18n="fs4">Lash & Brow</a></li>
+          <li><a href="#services" data-i18n="fs5">OLA Luxury Ritual</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4 data-i18n="footer_info_h">Studio</h4>
+        <ul>
+          <li><a href="#specialists" data-i18n="fi1">Our Team</a></li>
+          <li><a href="#location" data-i18n="fi2">Location</a></li>
+          <li><a href="#" data-i18n="fi3">Gift Cards</a></li>
+          <li><a href="#" data-i18n="fi4">Loyalty Programme</a></li>
+          <li><a href="#" data-i18n="fi5">Careers</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4 data-i18n="footer_contact_h">Contact</h4>
+        <p>Plzeňská 535/50<br>Praha 5, Czech Republic</p>
+        <p style="margin-top:0.75rem;">+420 777 123 456</p>
+        <p>hello@olastudio.cz</p>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p class="footer-copy">© 2024 OLA STUDIO s.r.o. · <span data-i18n="footer_rights">All rights reserved</span></p>
+      <div class="footer-social">
+        <a href="#" data-i18n="social_ig">Instagram</a>
+        <a href="#" data-i18n="social_fb">Facebook</a>
+        <a href="#" data-i18n="social_tt">TikTok</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+/* =============================================
+   THREE.JS WEBGL SCENE
+   ============================================= */
+(function() {
+  const container = document.getElementById('canvas-container');
+
+  // RENDERER
+  const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.outputEncoding = THREE.sRGBEncoding;
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 1.2;
+  container.appendChild(renderer.domElement);
+
+  // SCENE
+  const scene = new THREE.Scene();
+  scene.background = null;
+
+  // CAMERA
+  const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 100);
+  camera.position.set(0, 0, 4.6);
+
+  // LIGHTS
+  const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
+  scene.add(ambientLight);
+
+  const dirLight1 = new THREE.DirectionalLight(0xffffff, 5.0);
+  dirLight1.position.set(6, 6, 6);
+  scene.add(dirLight1);
+
+  const dirLight2 = new THREE.DirectionalLight(0xffe4e1, 3.5);
+  dirLight2.position.set(-6, -2, -4);
+  scene.add(dirLight2);
+
+  const fillLight = new THREE.PointLight(0xffd6cc, 1.8, 20);
+  fillLight.position.set(0, 3, 3);
+  scene.add(fillLight);
+
+  // CORE MESH
+  const geometry = new THREE.TorusKnotGeometry(1.2, 0.28, 200, 32, 3, 5);
+  const material = new THREE.MeshStandardMaterial({
+    color: 0xfff0f5,
+    metalness: 0.85,
+    roughness: 0.04,
+    envMapIntensity: 1.0
+  });
+
+  const mesh = new THREE.Mesh(geometry, material);
+  mesh.position.set(0, 0, 0);
+  scene.add(mesh);
+
+  // MOUSE TRACKING
+  let mouseX = 0, mouseY = 0;
+  let targetRotX = 0, targetRotY = 0;
+  let currentRotX = 0, currentRotY = 0;
+
+  document.addEventListener('mousemove', (e) => {
+    mouseX = (e.clientX / window.innerWidth - 0.5) * 2;
+    mouseY = -(e.clientY / window.innerHeight - 0.5) * 2;
+  });
+
+  // SCROLL STATE
+  let scrollProgress = 0;
+  let wireframeActive = false;
+
+  window.addEventListener('scroll', () => {
+    const totalHeight = document.body.scrollHeight - window.innerHeight;
+    scrollProgress = window.scrollY / totalHeight;
+  });
+
+  // RESIZE
+  window.addEventListener('resize', () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+  });
+
+  // EXPOSE mesh & material globally for GSAP
+  window._olaMesh = mesh;
+  window._olaMaterial = material;
+  window._olaCamera = camera;
+
+  // ANIMATE
+  const clock = new THREE.Clock();
+
+  function animate() {
+    requestAnimationFrame(animate);
+    const elapsed = clock.getElapsedTime();
+
+    // Fluid mouse dampening
+    targetRotX = mouseY * 0.4;
+    targetRotY = mouseX * 0.4;
+    currentRotX = THREE.MathUtils.lerp(currentRotX, targetRotX, 0.05);
+    currentRotY = THREE.MathUtils.lerp(currentRotY, targetRotY, 0.05);
+
+    mesh.rotation.x = currentRotX + elapsed * 0.12;
+    mesh.rotation.y = currentRotY + elapsed * 0.18;
+    mesh.rotation.z = elapsed * 0.06;
+
+    // Breathing scale
+    const breathe = 1 + Math.sin(elapsed * 0.7) * 0.018;
+    mesh.scale.setScalar(breathe);
+
+    // Light orbit
+    dirLight1.position.x = Math.sin(elapsed * 0.3) * 6;
+    dirLight1.position.z = Math.cos(elapsed * 0.3) * 6;
+
+    renderer.render(scene, camera);
+  }
+
+  animate();
+})();
+
+
+/* =============================================
+   DIAGONAL PARTICLE CANVAS
+   ============================================= */
+(function() {
+  const canvas = document.getElementById('diag-canvas');
+  const ctx = canvas.getContext('2d');
+
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+
+  window.addEventListener('resize', () => {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    initParticles();
+  });
+
+  let particles = [];
+  const PARTICLE_COUNT = 180;
+
+  function initParticles() {
+    particles = [];
+    for (let i = 0; i < PARTICLE_COUNT; i++) {
+      particles.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        speed: 0.5 + Math.random() * 2.5,
+        size: 0.5 + Math.random() * 1.5,
+        alpha: 0.1 + Math.random() * 0.7,
+        length: 15 + Math.random() * 60,
+        hue: Math.random() > 0.5 ? '#e8c547' : '#c9877a',
+        active: false
+      });
+    }
+  }
+
+  initParticles();
+
+  let diagActive = false;
+  window._diagActive = false;
+  window._setDiagActive = (v) => { diagActive = v; window._diagActive = v; };
+
+  function drawParticles() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    if (!diagActive) return;
+
+    particles.forEach(p => {
+      // Move diagonally: up and right (45 degrees)
+      p.x += p.speed * 0.707;
+      p.y -= p.speed * 0.707;
+
+      // Wrap around
+      if (p.x > canvas.width + 100) p.x = -100;
+      if (p.y < -100) p.y = canvas.height + 100;
+
+      ctx.save();
+      ctx.globalAlpha = p.alpha;
+      ctx.strokeStyle = p.hue;
+      ctx.lineWidth = p.size;
+      ctx.beginPath();
+      // Draw diagonal line segment at 45 degrees
+      ctx.moveTo(p.x, p.y);
+      ctx.lineTo(p.x - p.length * 0.707, p.y + p.length * 0.707);
+      ctx.stroke();
+      ctx.restore();
+    });
+
+    requestAnimationFrame(drawParticles);
+  }
+
+  window._startDiagParticles = () => {
+    diagActive = true;
+    drawParticles();
+  };
+
+  window._stopDiagParticles = () => {
+    diagActive = false;
+  };
+})();
+
+
+/* =============================================
+   DATA PULSE STRINGS
+   ============================================= */
+(function() {
+  const overlay = document.getElementById('particles-overlay');
+  const strings = [
+    'PREMIUM HAIR', 'MANICURE', 'GLOW SKIN', 'OLA_STUDIO PRAGUE',
+    'BALAYAGE', 'GEL NAILS', 'HYDRAFACIAL', 'KERATIN',
+    'MESOTHERAPY', 'COLOR_2024', 'LASH LIFT', 'OLAPLEX'
+  ];
+  const pulses = [];
+
+  function createPulse() {
+    const el = document.createElement('div');
+    el.className = 'data-pulse';
+    el.textContent = strings[Math.floor(Math.random() * strings.length)];
+    el.style.left = Math.random() * 80 + '%';
+    el.style.top = (60 + Math.random() * 30) + '%';
+    overlay.appendChild(el);
+    pulses.push(el);
+
+    gsap.to(el, {
+      opacity: 0.8,
+      x: (150 + Math.random() * 200),
+      y: -(150 + Math.random() * 200),
+      duration: 2.5 + Math.random() * 2,
+      ease: 'power1.inOut',
+      onComplete: () => {
+        el.remove();
+        pulses.splice(pulses.indexOf(el), 1);
+      }
+    });
+  }
+
+  let pulseInterval = null;
+
+  window._startDataPulses = () => {
+    if (pulseInterval) return;
+    pulseInterval = setInterval(createPulse, 300);
+  };
+
+  window._stopDataPulses = () => {
+    clearInterval(pulseInterval);
+    pulseInterval = null;
+  };
+})();
+
+
+/* =============================================
+   GSAP SCROLL TRIGGERS
+   ============================================= */
+gsap.registerPlugin(ScrollTrigger);
+
+// HERO entrance
+gsap.timeline({ defaults: { ease: 'power3.out' } })
+  .to('.hero-eyebrow', { opacity: 1, y: 0, duration: 1.2, delay: 0.3 })
+  .to('.hero-title', { opacity: 1, y: 0, duration: 1.4 }, '-=0.8')
+  .to('.hero-subtitle', { opacity: 0.7, y: 0, duration: 1 }, '-=0.9')
+  .to('.hero-scroll-hint', { opacity: 1, duration: 1 }, '-=0.5');
+
+// Camera cinematic zoom on scroll start
+ScrollTrigger.create({
+  trigger: '#services',
+  start: 'top 80%',
+  end: 'top 20%',
+  scrub: 1.5,
+  onUpdate: (self) => {
+    const p = self.progress;
+    window._olaCamera.position.z = 4.6 - p * 1.8;
+  }
+});
+
+// Wireframe activate + diagonal matrix on services enter
+ScrollTrigger.create({
+  trigger: '#services',
+  start: 'top center',
+  end: 'bottom center',
+  onEnter: () => {
+    gsap.to(window._olaMaterial, { wireframe: true, duration: 0.1, onComplete: () => {
+      window._olaMaterial.wireframe = true;
+    }});
+    window._startDiagParticles();
+    window._startDataPulses();
+    gsap.to('#diag-canvas', { opacity: 1, duration: 1 });
+  },
+  onLeave: () => {
+    window._olaMaterial.wireframe = false;
+    window._stopDiagParticles();
+    window._stopDataPulses();
+    gsap.to('#diag-canvas', { opacity: 0, duration: 1 });
+    gsap.to(window._olaCamera.position, { z: 4.6, duration: 2, ease: 'power2.out' });
+  },
+  onEnterBack: () => {
+    window._olaMaterial.wireframe = true;
+    window._startDiagParticles();
+    window._startDataPulses();
+    gsap.to('#diag-canvas', { opacity: 1, duration: 1 });
+  },
+  onLeaveBack: () => {
+    window._olaMaterial.wireframe = false;
+    window._stopDiagParticles();
+    window._stopDataPulses();
+    gsap.to('#diag-canvas', { opacity: 0, duration: 0.6 });
+  }
+});
+
+// Bento cards stagger reveal
+gsap.from('.bento-card', {
+  scrollTrigger: {
+    trigger: '#bento-container',
+    start: 'top 80%',
+    end: 'top 20%',
+    scrub: 0.8
+  },
+  opacity: 0,
+  y: 60,
+  stagger: 0.15,
+  ease: 'power2.out'
+});
+
+// Bento DIAGONAL EXIT — slide up and right 45°
+ScrollTrigger.create({
+  trigger: '#bento-container',
+  start: 'bottom 30%',
+  end: 'bottom -20%',
+  scrub: 1.2,
+  onUpdate: (self) => {
+    const p = self.progress;
+    const vx = p * 130;
+    const vy = -p * 130;
+    gsap.set('#bento-container', { x: vx + 'vw', y: vy + 'vh', opacity: 1 - p * 0.7 });
+  }
+});
+
+// RESET bento position on scroll back
+ScrollTrigger.create({
+  trigger: '#bento-container',
+  start: 'top 90%',
+  onEnterBack: () => {
+    gsap.to('#bento-container', { x: 0, y: 0, opacity: 1, duration: 1.2, ease: 'power2.out' });
+  }
+});
+
+// Specialists cards reveal
+gsap.from('.specialist-card', {
+  scrollTrigger: {
+    trigger: '.specialists-grid',
+    start: 'top 80%',
+    end: 'top 30%',
+    scrub: 0.8
+  },
+  opacity: 0,
+  y: 50,
+  stagger: 0.2
+});
+
+// Section titles
+gsap.utils.toArray('.section-title').forEach(el => {
+  gsap.from(el, {
+    scrollTrigger: { trigger: el, start: 'top 85%' },
+    opacity: 0,
+    y: 40,
+    duration: 1.2,
+    ease: 'power3.out'
+  });
+});
+
+// Location section
+gsap.from('.location-info', {
+  scrollTrigger: { trigger: '#location', start: 'top 75%' },
+  opacity: 0, x: -50, duration: 1.2, ease: 'power3.out'
+});
+gsap.from('.map-wrapper', {
+  scrollTrigger: { trigger: '#location', start: 'top 75%' },
+  opacity: 0, x: 50, duration: 1.2, ease: 'power3.out'
+});
+
+// Navbar scroll class
+window.addEventListener('scroll', () => {
+  const nav = document.getElementById('main-nav');
+  if (window.scrollY > 60) nav.classList.add('scrolled');
+  else nav.classList.remove('scrolled');
+});
+
+// Bento card 3D tilt
+document.querySelectorAll('.bento-card').forEach(card => {
+  card.addEventListener('mousemove', (e) => {
+    const rect = card.getBoundingClientRect();
+    const cx = rect.left + rect.width / 2;
+    const cy = rect.top + rect.height / 2;
+    const dx = (e.clientX - cx) / (rect.width / 2);
+    const dy = (e.clientY - cy) / (rect.height / 2);
+    gsap.to(card, {
+      rotateY: dx * 8,
+      rotateX: -dy * 8,
+      duration: 0.3,
+      ease: 'power2.out',
+      transformPerspective: 900
+    });
+  });
+  card.addEventListener('mouseleave', () => {
+    gsap.to(card, { rotateY: 0, rotateX: 0, duration: 0.6, ease: 'elastic.out(1, 0.5)' });
+  });
+});
+
+
+/* =============================================
+   i18n LANGUAGE SWITCHER
+   ============================================= */
+const translations = {
+  en: {
+    nav_services: 'Services',
+    nav_team: 'Team',
+    nav_location: 'Location',
+    hero_eyebrow: 'Prague · Plzeňská 535/50 · Premium Salon',
+    hero_subtitle: 'Where Artistry Meets Luxury Beauty',
+    scroll_hint: 'Scroll to explore',
+    services_label: '— Our Signature Services',
+    services_title: 'Crafted<br>with <em>Precision</em>',
+    card1_title: 'Premium Hair<br>Styling & Color',
+    card1_desc: 'Our master colorists wield the finest European pigments and balayage techniques to sculpt your ideal shade—whether that\'s a seamless sun-kissed melt, bold vibrant fantasy hues, or precision-crafted highlights that catch every light.',
+    card1_tag: 'From 1,800 CZK',
+    card2_title: 'Bespoke Nail Architecture',
+    card2_desc: 'Gel extensions, nail art, and manicure rituals designed to perfection. Each set a miniature sculpture.',
+    card2_tag: 'From 650 CZK',
+    card3_title: 'Advanced Aesthetics',
+    card3_desc: 'Clinical-grade facial treatments, mesotherapy, and skin rejuvenation using the latest dermal technologies. Your radiance, redefined.',
+    card3_tag: 'From 2,200 CZK',
+    card4_title: 'Lash & Brow Sculpting',
+    card4_desc: 'Volume lash sets, lamination, and precision brow shaping to frame your gaze.',
+    card4_tag: 'From 800 CZK',
+    card5_title: 'OLA Luxury Ritual',
+    card5_desc: 'A curated full-day package: hair, nails, facial and champagne welcome. The ultimate Prague beauty day.',
+    card5_tag: 'From 5,500 CZK',
+    team_label: '— The Artisans Behind OLA',
+    team_title: 'Meet Our<br><em>Specialists</em>',
+    spec1_role: 'Senior Hair Colorist',
+    spec1_bio: 'Trained at the L\'Oréal Professional Academy in Paris, Kristýna specialises in balayage, colour correction and hair health. With over 9 years of experience, she brings couture-level artistry to every client chair.',
+    spec2_role: 'Nail Architect & Artist',
+    spec2_bio: 'Anastasia\'s nail artistry has appeared in Czech Vogue and Elle Beauty. She commands every technique from sculptural acrylics to delicate gel nail art, working only with premium HEMA-free gel systems.',
+    spec3_role: 'Aesthetic Medicine Therapist',
+    spec3_bio: 'A certified aesthetic therapist with a background in dermatology nursing, Monika combines clinical precision with a deeply personalised touch. She specialises in Hydrafacial, advanced peels, and mesotherapy.',
+    loc_label: '— Find Us',
+    hours_detail: 'Mon – Fri: 9:00 – 20:00<br>Saturday: 9:00 – 18:00<br>Sunday: Closed',
+    book_btn: 'Book an Appointment',
+    footer_tagline: 'Where Prague\'s most discerning clients discover beauty elevated to art. Every appointment, a private atelier experience.',
+    footer_services_h: 'Services',
+    footer_info_h: 'Studio',
+    footer_contact_h: 'Contact',
+    fs1: 'Hair Styling & Color', fs2: 'Nail Architecture', fs3: 'Advanced Aesthetics', fs4: 'Lash & Brow', fs5: 'OLA Luxury Ritual',
+    fi1: 'Our Team', fi2: 'Location', fi3: 'Gift Cards', fi4: 'Loyalty Programme', fi5: 'Careers',
+    footer_rights: 'All rights reserved',
+    social_ig: 'Instagram', social_fb: 'Facebook', social_tt: 'TikTok'
+  },
+  cs: {
+    nav_services: 'Služby',
+    nav_team: 'Tým',
+    nav_location: 'Kde nás najdete',
+    hero_eyebrow: 'Praha · Plzeňská 535/50 · Prémiový Salon',
+    hero_subtitle: 'Kde umění potkává luxusní krásu',
+    scroll_hint: 'Scrollujte pro více',
+    services_label: '— Naše Prémiové Služby',
+    services_title: 'Vytvořeno<br>s <em>Precizností</em>',
+    card1_title: 'Prémiový Styling<br>a Barvení Vlasů',
+    card1_desc: 'Naši mistři barev využívají nejlepší evropské pigmenty a balayage techniky, aby vám vytvořili ideální odstín — od přirozeného melíru přes odvážné barevné tóny až po precizní highlights.',
+    card1_tag: 'Od 1 800 Kč',
+    card2_title: 'Bespoke Nail Architecture',
+    card2_desc: 'Gelové extensions, nail art a manikúra navržená k dokonalosti. Každý set je miniaturní skulptura.',
+    card2_tag: 'Od 650 Kč',
+    card3_title: 'Pokročilá Estetika',
+    card3_desc: 'Klinické ošetření pleti, mezoterapie a omlazení pokožky pomocí nejnovějších dermatologických technologií.',
+    card3_tag: 'Od 2 200 Kč',
+    card4_title: 'Tvarování Řas a Obočí',
+    card4_desc: 'Volume sety řas, laminace a precizní tvarování obočí pro dokonalý pohled.',
+    card4_tag: 'Od 800 Kč',
+    card5_title: 'OLA Luxusní Rituál',
+    card5_desc: 'Celodenní balíček: vlasy, nehty, ošetření pleti a uvítání šampaňským. Nejlepší pražský beauty den.',
+    card5_tag: 'Od 5 500 Kč',
+    team_label: '— Umělci za OLA',
+    team_title: 'Poznejte naše<br><em>Specialistky</em>',
+    spec1_role: 'Seniorní Koloristka',
+    spec1_bio: 'Kristýna se specializuje na balayage, korekce barvy a zdraví vlasů. S více než 9 lety zkušeností přináší couture-level umění ke každému klientskému křeslu.',
+    spec2_role: 'Nail Architektka & Umělkyně',
+    spec2_bio: 'Anastasiin nail art se objevil v českém Vogue a Elle Beauty. Ovládá každou techniku od skulpturálních akrylů po jemný gel nail art.',
+    spec3_role: 'Terapeut estetické medicíny',
+    spec3_bio: 'Monika kombinuje klinickou preciznost s hluboce personalizovaným přístupem. Specializuje se na Hydrafacial, pokročilé peely a mezoterapii.',
+    loc_label: '— Kde nás najdete',
+    hours_detail: 'Po – Pá: 9:00 – 20:00<br>Sobota: 9:00 – 18:00<br>Neděle: Zavřeno',
+    book_btn: 'Rezervovat termín',
+    footer_tagline: 'Kde náročná Praha objevuje krásu povýšenou na umění. Každá návštěva je soukromý ateliér.',
+    footer_services_h: 'Služby',
+    footer_info_h: 'Studio',
+    footer_contact_h: 'Kontakt',
+    fs1: 'Styling a barvení vlasů', fs2: 'Nail Architecture', fs3: 'Pokročilá estetika', fs4: 'Řasy a obočí', fs5: 'OLA Luxusní rituál',
+    fi1: 'Náš tým', fi2: 'Kde nás najdete', fi3: 'Dárkové poukazy', fi4: 'Věrnostní program', fi5: 'Kariéra',
+    footer_rights: 'Všechna práva vyhrazena',
+    social_ig: 'Instagram', social_fb: 'Facebook', social_tt: 'TikTok'
+  },
+  ru: {
+    nav_services: 'Услуги',
+    nav_team: 'Команда',
+    nav_location: 'Адрес',
+    hero_eyebrow: 'Прага · Plzeňská 535/50 · Премиум Салон',
+    hero_subtitle: 'Где мастерство встречает роскошную красоту',
+    scroll_hint: 'Прокрутите вниз',
+    services_label: '— Наши Услуги',
+    services_title: 'Создано<br>с <em>Точностью</em>',
+    card1_title: 'Премиум Стрижки<br>и Окрашивание',
+    card1_desc: 'Наши мастера-колористы используют лучшие европейские пигменты и технику балаяж для создания вашего идеального оттенка.',
+    card1_tag: 'От 1 800 CZK',
+    card2_title: 'Бесспорная Ногтевая Архитектура',
+    card2_desc: 'Гелевые наращивания, ногтевой арт и маникюр, доведённые до совершенства. Каждый сет — миниатюрная скульптура.',
+    card2_tag: 'От 650 CZK',
+    card3_title: 'Передовая Эстетика',
+    card3_desc: 'Клинические процедуры для лица, мезотерапия и омоложение кожи с использованием новейших дерматологических технологий.',
+    card3_tag: 'От 2 200 CZK',
+    card4_title: 'Моделирование Ресниц и Бровей',
+    card4_desc: 'Объёмные наращивания ресниц, ламинирование и точная коррекция бровей.',
+    card4_tag: 'От 800 CZK',
+    card5_title: 'OLA Люкс Ритуал',
+    card5_desc: 'Полный пакет на целый день: волосы, ногти, уход за кожей лица и бокал шампанского.',
+    card5_tag: 'От 5 500 CZK',
+    team_label: '— Мастера OLA',
+    team_title: 'Познакомьтесь с нашими<br><em>Специалистами</em>',
+    spec1_role: 'Старший Колорист',
+    spec1_bio: 'Кристина специализируется на балаяж, коррекции цвета и здоровье волос. С более чем 9-летним опытом она привносит мастерство уровня кутюр.',
+    spec2_role: 'Ногтевой Архитектор и Художник',
+    spec2_bio: 'Ногтевое искусство Анастасии появлялось в Czech Vogue и Elle Beauty. Она владеет каждой техникой — от скульптурных акрилов до гель-арта.',
+    spec3_role: 'Терапевт Эстетической Медицины',
+    spec3_bio: 'Моника сочетает клиническую точность с глубоко персонализированным подходом, специализируясь на Hydrafacial и мезотерапии.',
+    loc_label: '— Как нас найти',
+    hours_detail: 'Пн – Пт: 9:00 – 20:00<br>Суббота: 9:00 – 18:00<br>Воскресенье: Закрыто',
+    book_btn: 'Записаться на приём',
+    footer_tagline: 'Где самые взыскательные клиенты Праги открывают красоту, возведённую в искусство.',
+    footer_services_h: 'Услуги',
+    footer_info_h: 'Студия',
+    footer_contact_h: 'Контакты',
+    fs1: 'Стрижки и окрашивание', fs2: 'Ногтевая архитектура', fs3: 'Передовая эстетика', fs4: 'Ресницы и брови', fs5: 'OLA Люкс ритуал',
+    fi1: 'Наша команда', fi2: 'Адрес', fi3: 'Подарочные карты', fi4: 'Программа лояльности', fi5: 'Карьера',
+    footer_rights: 'Все права защищены',
+    social_ig: 'Инстаграм', social_fb: 'Фейсбук', social_tt: 'ТикТок'
+  }
+};
+
+let currentLang = 'en';
+
+function applyTranslation(lang) {
+  currentLang = lang;
+  const t = translations[lang];
+  if (!t) return;
+
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    if (t[key] !== undefined) {
+      el.innerHTML = t[key];
+    }
+  });
+
+  document.querySelectorAll('.lang-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.getAttribute('data-lang') === lang);
+  });
+}
+
+document.querySelectorAll('.lang-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    applyTranslation(btn.getAttribute('data-lang'));
+  });
+});
+
+// Smooth scroll for nav links
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', (e) => {
+    const target = document.querySelector(a.getAttribute('href'));
+    if (target) {
+      e.preventDefault();
+      target.scrollIntoView({ behavior: 'smooth' });
+    }
+  });
+});
+</script>
+</body>
+</html>
